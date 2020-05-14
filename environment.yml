@@ -1,0 +1,12 @@
+name: covid-pegasus
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7
+  - numpy
+  - pandas
+  - matplotlib
+  - shapely
+  - pypy3.6
+  - ua-parser
