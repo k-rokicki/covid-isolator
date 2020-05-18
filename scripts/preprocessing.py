@@ -7,7 +7,7 @@ import src.constants.constants as constants
 def run_preprocessing(result_path, daily, ignore_single, verbose):
     if daily:
         for file in os.scandir(constants.data_folder):
-            day = file.name[:-8]
+            day = os.path.splitext(file.name)[0][:-8]
             preprocess_daily.preprocessing(day, ignore_single, result_path)
     else:
         preprocess_grouped.preprocessing(os.path.join(result_path, 'PL'), verbose)
@@ -37,7 +37,7 @@ parser.add_argument('-i',
 
 parser.add_argument('-v',
                     '--verbose',
-                    help='Will display extra runtime info (default=False)',
+                    help='Will display extra runtime info, (default=False)',
                     action="store_true",
                     default=False)
 

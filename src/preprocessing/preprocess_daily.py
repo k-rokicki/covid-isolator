@@ -132,22 +132,21 @@ def group_users_in_intervals(data, date):
 
 
 # Save records from previous day
-def save_previous_day(path, file_name, countries):
+def save_previous_day(path, date, countries):
     for index, country in enumerate(countries):
-        curr_day_str = file_name[-8:]
-        curr_day = datetime.strptime(curr_day_str, '%Y%m%d').date()
+        curr_day = datetime.strptime(date, '%Y%m%d').date()
         prev_day = curr_day - timedelta(days=1)
 
         prev_day_file = prev_day.strftime('%Y%m%d')
 
-        midnight_local = pd.to_datetime(file_name).timestamp() * 1000
+        midnight_local = pd.to_datetime(date).timestamp() * 1000
 
         country_temp = country[1].loc[country[1]['timeStamp'] < midnight_local]
         temp = list(countries[index])
         temp[1] = country[1].loc[country[1]['timeStamp'] >= midnight_local]
         countries[index] = tuple(temp)
 
-        country_temp.to_csv(path + country[0] + '/' + prev_day_file + '.tsv',
+        country_temp.to_csv(os.path.join(path, country[0], prev_day_file + '.tsv'),
                             mode='a+', header=None, columns=constants.columns_to_save_daily,
                             index=False, sep='\t')
 
@@ -155,10 +154,9 @@ def save_previous_day(path, file_name, countries):
 
 
 # Save records from following day
-def save_next_day(path, file_name, countries):
+def save_next_day(path, date, countries):
     for index, country in enumerate(countries):
-        curr_day_str = file_name[-8:]
-        curr_day = datetime.strptime(curr_day_str, '%Y%m%d').date()
+        curr_day = datetime.strptime(date, '%Y%m%d').date()
         next_day = curr_day + timedelta(days=1)
 
         next_day_file = next_day.strftime('%Y%m%d')
@@ -170,7 +168,7 @@ def save_next_day(path, file_name, countries):
         temp[1] = country[1].loc[country[1]['timeStamp'] < midnight_local]
         countries[index] = tuple(temp)
 
-        country_temp.to_csv(path + country[0] + '/' + next_day_file + '.tsv',
+        country_temp.to_csv(os.path.join(path, country[0], next_day_file + '.tsv'),
                             mode='w', header=None, columns=constants.columns_to_save_daily,
                             index=False, sep='\t')
 
@@ -178,28 +176,28 @@ def save_next_day(path, file_name, countries):
 
 
 # Save data to files
-def split_by_country(path, file_name, data):
+def split_by_country(path, date, data):
     # Split data by country
     countries = [(country, frame) for country, frame in data.groupby('country')]
 
     # Convert timezones for timeStamps
     for index, country in enumerate(countries):
         country_code = country_timezones(country[0])[0]
-        data = group_users_in_intervals(country[1], file_name)
+        data = group_users_in_intervals(country[1], date)
         data['timeStamp'] = pd.to_datetime(data['timeStamp'].astype(str), utc=True, unit='ms') \
                                 .dt.tz_convert(tz=country_code).dt.tz_localize(None) \
                                 .values.astype(np.int64) // 10 ** 6
         countries[index] = (country[0], data)
 
     # Append data from previous day into proper file
-    countries = save_previous_day(path, file_name, countries)
+    countries = save_previous_day(path, date, countries)
 
     # Create file for next day
-    countries = save_next_day(path, file_name, countries)
+    countries = save_next_day(path, date, countries)
 
     # Save splitted data
     for country in countries:
-        country[1].to_csv(path + country[0] + '/' + file_name + '.tsv',
+        country[1].to_csv(os.path.join(path, country[0], date + '.tsv'),
                           columns=constants.columns_to_save_daily, header=None,
                           index=False, sep='\t', mode='a')
 
@@ -210,6 +208,12 @@ def preprocessing(day, ignore_single, result_folder):
             file_name = file.name
             break
 
+    # Read and filter data
     data = read_data(os.path.join(constants.data_folder, file_name),
                      preprocess_geo_data, ignore_single)
-    split_by_country(result_folder, file_name, data)
+
+    # Get date from file's name
+    date = os.path.splitext(file_name)[0][-8:]
+
+    # Save data from each country to separate directories
+    split_by_country(result_folder, date, data)
