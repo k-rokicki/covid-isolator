@@ -104,13 +104,20 @@ Before running preprocessing script add .tsv files to `data` directory. Data sho
 The script for preprocessing can be run with:
 
 ```
-python3 -m scripts.preprocessing [path] [-d, --daily] [-i, --ignore-single] [-v, --verbose] [-h, --help]
+python3 -m scripts.preprocessing [path] [-d, --daily] [-s SINGLE_DAY, --single-day SINGLE_DAY] [-i, --ignore-single] [-v, --verbose] [-h, --help]
+```
+
+To preprocess single daily file, run:
+
+```
+python3 -m scripts.preprocessing -s YYYYMMDD [-i] [path]
 ```
 
 #### Preprocessing parameters
 
 * `[path]` Path to existing, empty directory, where output files will be generated, (default=`preprocessed`).
 * `[-d, --daily]` Run daily preprocessing, (default=False).
+* `[-s SINGLE_DAY, --single-day SINGLE_DAY]` Run daily preprocessing for single day, SINGLE_DAY should be passed in YYYYMMDD format. 
 * `[-i, --ignore-single]` Ignore non-moving users in daily preprocessing, (default=False, requires `[-d, --daily]`).
 * `[-v, --verbose]` Will display extra runtime info for grouped preprocessing, (default=False, without `[-d, --daily]`).
 * `[-h, --help]` Default help option prints help message.
