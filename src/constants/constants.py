@@ -10,7 +10,6 @@ num_intervals = 24
 data_folder = 'data'
 preprocessed_folder = 'preprocessed'
 results_folder = 'results'
-visualizations_folder = 'visualizations'
 
 columns_names_daily = np.array(['userId', 'appBundle', 'appName', 'userAgent',
                                 'country', 'city', 'zipCode', 'lat', 'lon',
@@ -85,6 +84,7 @@ cutoff_distances = cutoff_distances_dict(get_cutoff_distances_path)
 one_degree_precision_in_m_at_equator = 111120
 
 # Constants mostly for visualizations
+visualizations_folder = 'visualizations'
 base_final_day = '20200304'
 
 coronavirus_info_arr = [('green', 'First infection in Poland', base_final_day),
