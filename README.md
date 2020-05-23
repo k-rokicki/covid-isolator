@@ -14,6 +14,8 @@ Tool for monitoring of human aggregates during quarantine using geolocation data
     * [Grouped data](#grouped-data)
   * [Running preprocessing script](#running-preprocessing-script)
     * [Preprocessing parameters](#preprocessing-parameters)
+* [Grouping](#grouping)
+  * [geoJSON](#geojson)
 * [Authors](#authors)
 
 ## Getting started
@@ -121,6 +123,20 @@ python3 -m scripts.preprocessing -s YYYYMMDD [-i] [path]
 * `[-i, --ignore-single]` Ignore non-moving users in daily preprocessing, (default=False, requires `[-d, --daily]`).
 * `[-v, --verbose]` Will display extra runtime info for grouped preprocessing, (default=False, without `[-d, --daily]`).
 * `[-h, --help]` Default help option prints help message.
+
+## Grouping
+
+### geoJSON
+
+Default points of interest are provided in `geoJSON` directory. `filtered` subdirectory contains filtered geoJSONs from `original` subdirectory.
+
+To use different set of points, optionally remove existing and add new to `original` subdirectory. To filter geoJSONs, run:
+
+```
+python3 -m scripts.poi_filter
+```
+
+Filtering script removes points which do not have `name` key and for schools checks whether the name is in `schools` array from `src/contants/constants.py`.
 
 ## Authors
 
