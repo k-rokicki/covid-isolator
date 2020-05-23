@@ -84,6 +84,7 @@ cutoff_distances = cutoff_distances_dict(get_cutoff_distances_path)
 one_degree_precision_in_m_at_equator = 111120
 
 # Constants mostly for visualizations
+visualizations_folder = 'visualizations'
 base_final_day = '20200304'
 
 coronavirus_info_arr = [('green', 'First infection in Poland', base_final_day),

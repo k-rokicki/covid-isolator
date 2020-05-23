@@ -16,6 +16,9 @@ Tool for monitoring of human aggregates during quarantine using geolocation data
     * [Preprocessing parameters](#preprocessing-parameters)
 * [Grouping](#grouping)
   * [geoJSON](#geojson)
+* [Creating visualizations](#creating-visualizations)
+  * [Visualize params](#visualize-params)
+  * [Results description](#results-description)
 * [Authors](#authors)
 
 ## Getting started
@@ -137,6 +140,54 @@ python3 -m scripts.poi_filter
 ```
 
 Filtering script removes points which do not have `name` key and for schools checks whether the name is in `schools` array from `src/contants/constants.py`.
+
+## Creating visualizations
+
+In order to run visualizations scripts you will need to have directories generated
+ with poi-groping in your results folder (one directory per poi-grouping configuration).
+
+The script for creating visualizations can be run with:
+
+```
+python3 -m scripts.visualize_all [-h] [-i] [-b CHANGE_TO_BASE] [-c]
+```
+
+The inputs are taken from `results` folder and visualizations are stored in
+ `visualizations` folder.
+
+### Visualize params
+* `[-h]` Default help option prints help message.
+
+* `[-i]` When this option is selected all graphs will have marked dates related to 
+major coronavirus related events in Poland. Requires data with dates from march 2020.
+ 
+*  `[-b CHANGE_TO_BASE]` This parameter is used for setting base date. 
+All data from dates up to base date are averaged out and used for calculation 
+of base value, then all data are shown as change relative to base. 
+`CHANGE_TO_BASE` is taken in `%Y%m%d` format. In order to disable graphs
+ with change to base use `-b ""`. Default value is provided, see with `-h`.
+
+* `[-c]` When selected previous visualizations will be cleaned.
+
+### Results description
+All results are stored in `visualizations` folder. There is a generated 
+directory with visualizations for every configuration from `results` folder.
+
+In each configuration folder there are directories for all POI types 
+(from geojsons). There are 3 visualization types provided for every POI:
+
+* **Normal** - The counts for a POI type in a given day are left unchanged and 
+displayed.
+
+* **Normalized** - The counts for all POI types in a given day are scaled. They are 
+scaled to 10^6 daily data points (so when for a given day there are 10^6 
+data points, normal will be the same as normalized). 
+
+* **Share of total** - This graph type shows what percentage of data points from 
+a given day fell into a particular POI type.
+
+Also when change to base is set, every visualization type has its "relative to 
+base counterpart", so a total of 6 types.
 
 ## Authors
 
