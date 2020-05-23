@@ -12,7 +12,13 @@ def run_preprocessing(result_path, daily, single_day, ignore_single, verbose):
     elif single_day:
         preprocess_daily.preprocessing(single_day, ignore_single, result_path)
     else:
-        preprocess_grouped.preprocessing(os.path.join(result_path, 'PL'), verbose)
+        path = os.path.join(result_path, 'PL')
+
+        # Create directory if it does not exist
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        preprocess_grouped.preprocessing(path, verbose)
 
 
 parser = argparse.ArgumentParser()

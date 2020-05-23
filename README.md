@@ -88,14 +88,14 @@ Before running preprocessing script add .tsv files to `data` directory. Data sho
 
   Files may contain data from various days.
 
-  | **user** | **latitude** | **longitude** | **occured_at** |
+  | **user** | **occured_at** | **latitude** | **longitude** |
   |   :---:    |     :---:     |    :---:    |     :---:     |
-  | -615893454 | 52.894363 | 19.835129 | 2020-03-08 14:57:23.211999 |
+  | -615893454 | 2020-03-08 14:57:23.211999 | 52.894363 | 19.835129 |
 
   - **user**: user identifier
+  - **occured_at**: time in "YYYY-MM-DD hh:mm:ss.s" format
   - **latitude**: latitude
   - **longitude**: longitude
-  - **occured_at**: time in "YYYY-MM-DD hh:mm:ss.s" format
 
   In order to change columns' names edit all **\*_grouped** constants in `src/contants/constants.py`.
 
