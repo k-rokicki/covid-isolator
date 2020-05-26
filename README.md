@@ -1,4 +1,4 @@
-# covid-pegasus
+# covid-isolator
 
 Tool for monitoring of human aggregates during quarantine using geolocation data
 
