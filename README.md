@@ -139,7 +139,7 @@ To use different set of points, optionally remove existing and add new to `origi
 python3 -m scripts.poi_filter
 ```
 
-Filtering script removes points which do not have `name` key and for schools checks whether the name is in `schools` array from `src/contants/constants.py`.
+Filtering script removes points which do not have `name` key and for schools checks whether the name contains any keyword from `schools` array in `src/contants/constants.py`.
 
 ## Creating visualizations
 
