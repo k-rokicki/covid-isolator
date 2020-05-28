@@ -60,6 +60,16 @@ To deactivate environment, just run:
 conda deactivate
 ```
 
+### Folder initialization
+
+In order to initialize default directories used used throughout this project 
+run `init.sh` script located in scripts folder. The directories created by this 
+script are:
+* **data** - Input data should be placed here.
+* **preprocessed** - Preprocessing results by default will be stored here.
+* **results** - Grouping results will be stored here.
+* **visualizations** - Generated visualizations will be stored here.
+
 ## Preprocessing
 
 ### Adding data
