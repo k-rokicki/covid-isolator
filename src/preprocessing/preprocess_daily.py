@@ -146,9 +146,13 @@ def save_previous_day(path, date, countries):
         temp = list(countries[index])
         temp[1] = country[1].loc[country[1]['timeStamp'] >= midnight_local]
         countries[index] = tuple(temp)
+        
+        # Create directory for country if it does not exist
+        if not os.path.exists(os.path.join(path, country[0])):
+            os.makedirs(os.path.join(path, country[0]))
 
         country_temp.to_csv(os.path.join(path, country[0], prev_day_file + '.tsv'),
-                            mode='a+', header=None, columns=constants.columns_to_save_daily,
+                            mode='a', header=None, columns=constants.columns_to_save_daily,
                             index=False, sep='\t')
 
     return countries
@@ -170,7 +174,7 @@ def save_next_day(path, date, countries):
         countries[index] = tuple(temp)
 
         country_temp.to_csv(os.path.join(path, country[0], next_day_file + '.tsv'),
-                            mode='w', header=None, columns=constants.columns_to_save_daily,
+                            mode='a', header=None, columns=constants.columns_to_save_daily,
                             index=False, sep='\t')
 
     return countries

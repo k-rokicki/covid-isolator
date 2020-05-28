@@ -1,6 +1,7 @@
 import src.constants.constants as constants
 import json
 import os
+import shutil
 
 def filter_poi(directory, filename, school):
     with open(os.path.join(constants.geo_json_path_original, directory, filename), 'r') as f:
@@ -19,6 +20,11 @@ def filter_poi(directory, filename, school):
     with open(os.path.join(constants.geo_json_path_filtered, directory, filename), 'w', encoding='utf8') as f:
         json.dump(geo_json, f, ensure_ascii=False, indent=2)
 
+# Remove existing filtered geoJSONs
+for directory in os.scandir(constants.geo_json_path_filtered):
+    shutil.rmtree(directory)
+
+# Run filtering for each geoJSON in original directory
 for directory in os.scandir(constants.geo_json_path_original):
     for file in os.scandir(directory.path):
         filter_poi(directory.name, file.name, file.name.split('.')[0] == "school")

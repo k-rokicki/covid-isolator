@@ -14,6 +14,8 @@ Tool for monitoring of human aggregates during quarantine using geolocation data
     * [Grouped data](#grouped-data)
   * [Running preprocessing script](#running-preprocessing-script)
     * [Preprocessing parameters](#preprocessing-parameters)
+* [Grouping](#grouping)
+  * [geoJSON](#geojson)
 * [Creating visualizations](#creating-visualizations)
   * [Visualize params](#visualize-params)
   * [Results description](#results-description)
@@ -91,14 +93,14 @@ Before running preprocessing script add .tsv files to `data` directory. Data sho
 
   Files may contain data from various days.
 
-  | **user** | **latitude** | **longitude** | **occured_at** |
+  | **user** | **occured_at** | **latitude** | **longitude** |
   |   :---:    |     :---:     |    :---:    |     :---:     |
-  | -615893454 | 52.894363 | 19.835129 | 2020-03-08 14:57:23.211999 |
+  | -615893454 | 2020-03-08 14:57:23.211999 | 52.894363 | 19.835129 |
 
   - **user**: user identifier
+  - **occured_at**: time in "YYYY-MM-DD hh:mm:ss.s" format
   - **latitude**: latitude
   - **longitude**: longitude
-  - **occured_at**: time in "YYYY-MM-DD hh:mm:ss.s" format
 
   In order to change columns' names edit all **\*_grouped** constants in `src/contants/constants.py`.
 
@@ -124,6 +126,20 @@ python3 -m scripts.preprocessing -s YYYYMMDD [-i] [path]
 * `[-i, --ignore-single]` Ignore non-moving users in daily preprocessing, (default=False, requires `[-d, --daily]`).
 * `[-v, --verbose]` Will display extra runtime info for grouped preprocessing, (default=False, without `[-d, --daily]`).
 * `[-h, --help]` Default help option prints help message.
+
+## Grouping
+
+### geoJSON
+
+Default points of interest are provided in `geoJSON` directory. `filtered` subdirectory contains filtered geoJSONs from `original` subdirectory.
+
+To use different set of points, optionally remove existing and add new to `original` subdirectory. To filter geoJSONs, run:
+
+```
+python3 -m scripts.poi_filter
+```
+
+Filtering script removes points which do not have `name` key and for schools checks whether the name contains any keyword from `schools` array in `src/contants/constants.py`.
 
 ## Creating visualizations
 
