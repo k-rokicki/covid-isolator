@@ -62,13 +62,16 @@ conda deactivate
 
 ### Folder initialization
 
-In order to initialize default directories used used throughout this project 
+In order to initialize default directories used throughout this project 
 run `init.sh` script located in scripts folder. The directories created by this 
 script are:
 * **data** - Input data should be placed here.
 * **preprocessed** - Preprocessing results by default will be stored here.
 * **results** - Grouping results will be stored here.
 * **visualizations** - Generated visualizations will be stored here.
+
+If you want to use other directories instead of the ones provided, you will 
+need to change appropriate paths in `src/constants/constants.py`.
 
 ## Preprocessing
 
