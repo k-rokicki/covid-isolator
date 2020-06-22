@@ -1,1 +1,3 @@
 .idea/
+scripts/__pycache__/
+src/constants/__pycache__/
