@@ -4,6 +4,7 @@ import src.preprocessing.preprocess_daily as preprocess_daily
 import src.preprocessing.preprocess_grouped as preprocess_grouped
 import src.constants.constants as constants
 
+
 def run_preprocessing(result_path, daily, single_day, ignore_single, verbose):
     if daily:
         for file in os.scandir(constants.data_folder):
@@ -57,10 +58,10 @@ parser.add_argument('-v',
 
 args = parser.parse_args()
 
-if (args.ignore_single and (not args.daily and not args.single_day)):
+if args.ignore_single and (not args.daily and not args.single_day):
     parser.error('The --ignore-single (-i) argument requires the --daily (-d) or --single-day (-s)')
 
-if (args.verbose and args.daily):
+if args.verbose and args.daily:
     parser.error('The --verbose (-v) argument cannot be used with the --daily (-d)')
 
 run_preprocessing(args.path, args.daily, args.single_day, args.ignore_single, args.verbose)

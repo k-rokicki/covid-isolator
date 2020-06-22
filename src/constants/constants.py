@@ -16,7 +16,7 @@ columns_names_daily = np.array(['userId', 'appBundle', 'appName', 'userAgent',
                                 'ipHash', 'timeStamp'], dtype='<U9')
 
 columns_to_read_daily = np.array(['userId', 'userAgent', 'country', 'lat',
-                                   'lon', 'timeStamp'], dtype='<U9')
+                                  'lon', 'timeStamp'], dtype='<U9')
 
 dtypes_raw_daily = {
     'userId': 'Int64',
@@ -40,7 +40,7 @@ dtypes_raw_grouped = {
 }
 
 columns_to_save_daily = np.array(['userId', 'userAgent', 'lat',
-                                   'lon', 'timeStamp'], dtype='<U9')
+                                  'lon', 'timeStamp'], dtype='<U9')
 
 dtypes_preprocessed_daily = {
     'userId': 'Int64',
@@ -65,6 +65,7 @@ column_names_preprocessed_grouped = np.array(['userId', 'lat', 'lon',
 
 geo_json_path_original = 'geoJSON/original'
 geo_json_path_filtered = 'geoJSON/filtered'
+
 
 # Helper cutoff distance function
 def cutoff_distances_dict(json_path):
@@ -91,7 +92,7 @@ coronavirus_info_arr = [('green', 'First infection in Poland', base_final_day),
                         ('yellow', 'All schools are closed', '20200316'),
                         ('orange', 'Movement restrictions', '20200325'),
                         ('red', 'Parks, forests and beaches closed, '
-                         '\nrestrictions to number of people \nin shops',
+                                '\nrestrictions to number of people \nin shops',
                          '20200401')]
 
 # What to scale all daily counts to (for normalization)
@@ -99,4 +100,4 @@ scale_to_daily = 1000000
 
 # Constants for poi filtering
 schools = ["Szkoła Podstawowa", "Gimnazjum", "Liceum", "LO",
-            "Zespół Szkół", "ZS", "Technikum", "Zespół Szkolno-Przedszkolny"]
+           "Zespół Szkół", "ZS", "Technikum", "Zespół Szkolno-Przedszkolny"]
