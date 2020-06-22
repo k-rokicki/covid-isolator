@@ -1,4 +1,4 @@
-name: covid-pegasus
+name: covid-isolator
 channels:
   - conda-forge
   - defaults

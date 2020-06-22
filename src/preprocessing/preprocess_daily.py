@@ -1,6 +1,5 @@
 import concurrent.futures
 from datetime import datetime, timedelta
-import argparse
 import decimal
 import os
 import numpy as np
@@ -200,7 +199,7 @@ def split_by_country(path, date, data):
     # Create file for next day
     countries = save_next_day(path, date, countries)
 
-    # Save splitted data
+    # Save split data
     for country in countries:
         country[1].to_csv(os.path.join(path, country[0], date + '.tsv'),
                           columns=constants.columns_to_save_daily, header=None,
@@ -208,10 +207,15 @@ def split_by_country(path, date, data):
 
 
 def preprocessing(day, ignore_single, result_folder):
+    file_name = None
+
     for file in os.scandir(constants.data_folder):
         if day in file.name:
             file_name = file.name
             break
+
+    if file_name is None:
+        return
 
     # Read and filter data
     data = read_data(os.path.join(constants.data_folder, file_name),

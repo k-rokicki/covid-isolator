@@ -17,7 +17,7 @@ Tool for monitoring of human aggregates during quarantine using geolocation data
 * [Grouping](#grouping)
   * [geoJSON](#geojson)
 * [Creating visualizations](#creating-visualizations)
-  * [Visualize params](#visualize-params)
+  * [Visualisations parameters](#visualize-params)
   * [Results description](#results-description)
 * [Authors](#authors)
 
@@ -25,7 +25,7 @@ Tool for monitoring of human aggregates during quarantine using geolocation data
 
 ### Prerequisites
 
-To run covid-pegasus, you will need the newest version of Anaconda, available via the following link:
+To run covid-isolator, you will need the newest version of Anaconda, available via the following link:
 
 ```
 https://www.anaconda.com/products/individual
@@ -46,13 +46,13 @@ To create Anaconda environment with all nessesary packages, run:
 conda env create -f environment.yml
 ```
 
-This will create new environment named "covid-pegasus". To activate it, run:
+This will create new environment named "covid-isolator". To activate it, run:
 
 ```
-conda activate covid-pegasus
+conda activate covid-isolator
 ```
 
-All of the following instructions need to be executed with covid-pegasus environment activated.
+All of the following instructions need to be executed with covid-isolator environment activated.
 
 To deactivate environment, just run:
 
@@ -168,7 +168,7 @@ python3 -m scripts.visualize_all [-h] [-i] [-b CHANGE_TO_BASE] [-c]
 The inputs are taken from `results` folder and visualizations are stored in
  `visualizations` folder.
 
-### Visualize params
+### Visualisations parameters
 * `[-h]` Default help option prints help message.
 
 * `[-i]` When this option is selected all graphs will have marked dates related to 
@@ -189,7 +189,7 @@ directory with visualizations for every configuration from `results` folder.
 In each configuration folder there are directories for all POI types 
 (from geojsons). There are 3 visualization types provided for every POI:
 
-* **Normal** - The counts for a POI type in a given day are left unchanged and 
+* **Classic** - The counts for a POI type in a given day are left unchanged and 
 displayed.
 
 * **Normalized** - The counts for all POI types in a given day are scaled. They are 
@@ -199,8 +199,8 @@ data points, normal will be the same as normalized).
 * **Share of total** - This graph type shows what percentage of data points from 
 a given day fell into a particular POI type.
 
-Also when change to base is set, every visualization type has its "relative to 
-base counterpart", so a total of 6 types.
+Also when `change to base` is set, every visualization type has its "relative to 
+base counterpart", so a total of 6 types are created.
 
 ## Authors
 
