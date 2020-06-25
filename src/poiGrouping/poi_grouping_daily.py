@@ -253,7 +253,7 @@ def run_poi_grouping_daily(day, _country, closest,
 
     if daily:
         dtypes_preprocessed = constants.dtypes_preprocessed_daily
-        column_names_preprocessed = constants.columns_names_daily
+        column_names_preprocessed = constants.column_names_preprocessed_daily
     else:
         dtypes_preprocessed = constants.dtypes_preprocessed_grouped
         column_names_preprocessed = constants.column_names_preprocessed_grouped
