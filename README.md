@@ -175,7 +175,7 @@ python3 -m scripts.poi_grouping [preprocessed_path] [results_path] [country] [-d
 To run grouping on single daily file, run:
 
 ```
-python3 -m scripts.poi_grouping [preprocessed_path] [results_path] [country] [-d] [-c] -s SINGLE_DAY [-f] [-v] [-h]
+python3 -m scripts.poi_grouping [preprocessed_path] [results_path] [country] [-d] [-c] -s SINGLE_DAY [-f] [-v]
 ```
 
 #### Grouping parameters
@@ -187,7 +187,7 @@ python3 -m scripts.poi_grouping [preprocessed_path] [results_path] [country] [-d
 * `[-c, --closest]` Classify points only to closest POI, (default=True)
 * `[-s SINGLE_DAY, --single-day SINGLE_DAY]` Run grouping for single day, should be passed in YYYYMMDD format
 * `[-f, --filtered]` Run for filtered POI list, (default=True)
-* `[-h, --help]` Default help option prints help message.
+* `[-h, --help]` Default help option prints help message
 
 After running grouping script, `results_path` will have the same directories structure as `preprocessed_path` with output .json file for every day.
 
