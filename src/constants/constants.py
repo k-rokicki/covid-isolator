@@ -5,6 +5,7 @@ import numpy as np
 # General constants
 num_workers = 12
 num_intervals = 24
+default_country = 'PL'
 
 # Constants for preprocessing
 data_folder = 'data'
@@ -19,7 +20,7 @@ columns_to_read_daily = np.array(['userId', 'userAgent', 'country', 'lat',
                                   'lon', 'timeStamp'], dtype='<U9')
 
 dtypes_raw_daily = {
-    'userId': 'Int64',
+    'userId': np.int64,
     'appBundle': str,
     'appName': str,
     'userAgent': str,
@@ -28,12 +29,12 @@ dtypes_raw_daily = {
     'zipCode': str,
     'lat': np.float64,
     'lon': np.float64,
-    'ipHash': 'Int64',
-    'timeStamp': 'Int64'
+    'ipHash': np.int64,
+    'timeStamp': np.int64
 }
 
 dtypes_raw_grouped = {
-    'user': 'Int64',
+    'user': np.int64,
     'latitude': np.float64,
     'longitude': np.float64,
     'occured_at': str
@@ -43,18 +44,18 @@ columns_to_save_daily = np.array(['userId', 'userAgent', 'lat',
                                   'lon', 'timeStamp'], dtype='<U9')
 
 dtypes_preprocessed_daily = {
-    'userId': 'Int64',
+    'userId': np.int64,
     'OS': str,
     'lat': np.float64,
     'lon': np.float64,
-    'timeStamp': 'Int64'
+    'timeStamp': np.int64
 }
 
 dtypes_preprocessed_grouped = {
-    'userId': 'Int64',
+    'userId': np.int64,
     'lat': np.float64,
     'lon': np.float64,
-    'timeStamp': 'Int64'
+    'timeStamp': np.int64
 }
 
 column_names_preprocessed_daily = np.array(['userId', 'OS', 'lat', 'lon',

@@ -14,7 +14,7 @@ def run_poi_grouping(preprocessed_path, results_path, country,
                                                   daily, filtered, verbose,
                                                   input_path, output_path)
     else:
-        for file in os.scandir(input_path):
+        for file in sorted(os.scandir(input_path), key=lambda e: e.name):
             day = os.path.splitext(file.name)[0]
             poi_grouping_daily.run_poi_grouping_daily(day, country, closest,
                                                       daily, filtered, verbose,
@@ -37,15 +37,28 @@ parser.add_argument('results_path',
 
 parser.add_argument('country',
                     help='Country to group data from, '
-                         '(default=PL)',
-                    default='PL',
+                         '(default=' + constants.default_country + ')',
+                    default=constants.default_country,
                     nargs='?')
+
+parser.add_argument('-c',
+                    '--closest',
+                    help='Classify points only to closest POI, '
+                         '(default=True)',
+                    action='store_true',
+                    default=True)
 
 parser.add_argument('-d',
                     '--daily',
-                    help='Run daily grouping, (default=False)',
+                    help='Run daily grouping (daily dataset), (default=False)',
                     action='store_true',
                     default=False)
+
+parser.add_argument('-f',
+                    '--filtered',
+                    help='Run for filtered POI list, (default=True)',
+                    action='store_true',
+                    default=True)
 
 parser.add_argument('-s',
                     '--single-day',
@@ -55,11 +68,11 @@ parser.add_argument('-s',
 
 parser.add_argument('-v',
                     '--verbose',
-                    help='Will display extra runtime info, (default=False)',
+                    help='Will display runtime info, (default=False)',
                     action="store_true",
                     default=False)
 
 args = parser.parse_args()
 
-run_poi_grouping(args.preprocessed_path, args.results_path,
-                 args.country, args.daily, args.single_day, args.verbose)
+run_poi_grouping(args.preprocessed_path, args.results_path, args.country,
+                 args.closest, args.daily, args.filtered, args.single_day, args.verbose)

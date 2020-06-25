@@ -15,6 +15,9 @@ date = None
 country = None
 only_closest_poi = False
 
+dtypes_preprocessed = None
+column_names_preprocessed = None
+
 poi_shapes = {}
 
 
@@ -61,8 +64,8 @@ def read_shapes(poi_geo_json_path):
 
 # Read file from path and return a DataFrame
 def read_file(file_path):
-    data = pd.read_csv(file_path, sep='\t', dtype=constants.dtypes_preprocessed,
-                       header=None, names=constants.column_names_preprocessed,
+    data = pd.read_csv(file_path, sep='\t', dtype=dtypes_preprocessed,
+                       header=None, names=column_names_preprocessed,
                        error_bad_lines=False)
     data.loc[:, 'timeStamp'] = pd.to_datetime(data['timeStamp'].astype(str), unit='ms')
     return data
@@ -113,7 +116,7 @@ def update_result_dictionary(result_dict, result):
 def group_by_poi_worker(data_chunk):
     worker_result = {}
     for poi_type in poi_shapes.keys():
-        worker_result[poi_type] = np.zeros(constants.num_intervals, dtype='int64')
+        worker_result[poi_type] = np.zeros(constants.num_intervals, dtype=np.int64)
 
     for (lat, lon, group) in data_chunk.values:
         point = Point(lon, lat)
@@ -153,12 +156,13 @@ def group_by_poi_worker(data_chunk):
 
 
 def group_by_poi(_date, _country, filtered, verbose, preprocessed_path, save_path):
-    if verbose:
-        print('Starting script...')
     global date, country, poi_shapes
 
     date = _date
     country = _country
+
+    if verbose:
+        print('Starting script for day ' + date)
 
     # Declare date folder path
     date_path = os.path.join(preprocessed_path, str(date) + '.tsv')
@@ -205,7 +209,7 @@ def group_by_poi(_date, _country, filtered, verbose, preprocessed_path, save_pat
     for (poi_path, poi_types) in poi_list:
         # Get array of shapely objects with poi localizations
         poi_shapes[poi_types] = read_shapes(poi_path)
-        result_dict['poi_list'][poi_types] = np.zeros(constants.num_intervals, dtype='int64')
+        result_dict['poi_list'][poi_types] = np.zeros(constants.num_intervals, dtype=np.int64)
 
     end = time.time()
     if verbose:
@@ -236,18 +240,22 @@ def group_by_poi(_date, _country, filtered, verbose, preprocessed_path, save_pat
 
     if verbose:
         print('Script finished successfully')
+        print()
 
 
 def run_poi_grouping_daily(day, _country, closest,
                            daily, filtered, verbose,
                            input_path, output_path):
-    global only_closest_poi
+    global only_closest_poi, dtypes_preprocessed, column_names_preprocessed
 
     if closest:
         only_closest_poi = True
 
-    if not daily:
-        constants.dtypes_preprocessed = constants.dtypes_preprocessed_grouped
-        constants.column_names_preprocessed = constants.column_names_preprocessed_grouped
+    if daily:
+        dtypes_preprocessed = constants.dtypes_preprocessed_daily
+        column_names_preprocessed = constants.columns_names_daily
+    else:
+        dtypes_preprocessed = constants.dtypes_preprocessed_grouped
+        column_names_preprocessed = constants.column_names_preprocessed_grouped
 
     group_by_poi(day, _country, filtered, verbose, input_path, output_path)

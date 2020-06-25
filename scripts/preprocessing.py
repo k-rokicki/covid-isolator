@@ -13,7 +13,7 @@ def run_preprocessing(result_path, daily, single_day, ignore_single, verbose):
     elif single_day:
         preprocess_daily.preprocessing(single_day, ignore_single, result_path)
     else:
-        path = os.path.join(result_path, 'PL')
+        path = os.path.join(result_path, constants.default_country)
 
         # Create directory if it does not exist
         if not os.path.exists(path):

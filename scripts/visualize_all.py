@@ -20,21 +20,15 @@ def visualize_all_configurations(corona_info,
                                  base_day):
     directory_elements = os.listdir(const.results_folder)
 
-    for sub_folder_name in directory_elements:
-        sub_folder_path = os.path.join(const.results_folder, sub_folder_name)
-        inner_directory_elements = os.listdir(sub_folder_path)
+    for country_folder in directory_elements:
+        file_path = os.path.join(const.results_folder, country_folder)
+        vis_file_path = os.path.join(const.visualizations_folder, country_folder)
 
-        for file_name in inner_directory_elements:
-            file_path = os.path.join(sub_folder_path, file_name)
-            vis_file_path = os.path.join(const.visualizations_folder,
-                                         sub_folder_name,
-                                         file_name)
-
-            print('Working on:', file_path)
-            visualize_all(file_path,
-                          vis_file_path,
-                          corona_info,
-                          base_day)
+        print('Working on:', file_path)
+        visualize_all(file_path,
+                      vis_file_path,
+                      corona_info,
+                      base_day)
 
 
 parser = argparse.ArgumentParser(description='Make visualizations for all POIs,'
