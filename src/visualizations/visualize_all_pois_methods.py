@@ -201,7 +201,7 @@ def visualize_single(info,                   # all info from jsons
                                              # 2 -> as percentage from all POIs
                      centralize=True,        # Centralize around daily mean
                      save_dir=None):         # path to save dir, if None, plot
-    counts_days = np.sum(info['poi_counts'][poi_name], axis=1, dtype='int64')
+    counts_days = np.sum(info['poi_counts'][poi_name], axis=1, dtype=np.int64)
     counts_days = normalize_daily_counts(info, counts_days, normalize_option)
     counts_days = centralize_daily_counts(info, counts_days, centralize)
 

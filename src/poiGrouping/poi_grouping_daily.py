@@ -5,7 +5,6 @@ from shapely.geometry import shape, Point
 import concurrent.futures
 import pandas as pd
 import numpy as np
-import argparse
 import math
 import json
 import time
@@ -15,7 +14,9 @@ import os
 date = None
 country = None
 only_closest_poi = False
-new_dataset = False
+
+dtypes_preprocessed = None
+column_names_preprocessed = None
 
 poi_shapes = {}
 
@@ -63,8 +64,8 @@ def read_shapes(poi_geo_json_path):
 
 # Read file from path and return a DataFrame
 def read_file(file_path):
-    data = pd.read_csv(file_path, sep='\t', dtype=constants.dtypes_preprocessed,
-                       header=None, names=constants.column_names_preprocessed,
+    data = pd.read_csv(file_path, sep='\t', dtype=dtypes_preprocessed,
+                       header=None, names=column_names_preprocessed,
                        error_bad_lines=False)
     data.loc[:, 'timeStamp'] = pd.to_datetime(data['timeStamp'].astype(str), unit='ms')
     return data
@@ -115,7 +116,7 @@ def update_result_dictionary(result_dict, result):
 def group_by_poi_worker(data_chunk):
     worker_result = {}
     for poi_type in poi_shapes.keys():
-        worker_result[poi_type] = np.zeros(constants.num_intervals, dtype='int64')
+        worker_result[poi_type] = np.zeros(constants.num_intervals, dtype=np.int64)
 
     for (lat, lon, group) in data_chunk.values:
         point = Point(lon, lat)
@@ -154,32 +155,30 @@ def group_by_poi_worker(data_chunk):
     return worker_result
 
 
-def group_by_poi(_date, _country):
-    print('Starting script...')
+def group_by_poi(_date, _country, filtered, verbose, preprocessed_path, save_path):
     global date, country, poi_shapes
 
     date = _date
     country = _country
 
-    # Declare date folder path
-    if not new_dataset:
-        date_path = os.path.join(constants.preprocessed_folder, country, str(date) + '.tsv')
-    else:
-        date_path = os.path.join(constants.preprocessed_folder, str(date) + '.tsv')
+    if verbose:
+        print('Starting script for day ' + date)
 
-    # Declare saving path
-    save_path = os.path.join(constants.results_folder, 'poiGrouping', country)
+    # Declare date folder path
+    date_path = os.path.join(preprocessed_path, str(date) + '.tsv')
 
     # Make sure result directory exists
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
     # Read from preprocessed
-    print('Loading data... ', end='', flush=True)
+    if verbose:
+        print('Loading data... ', end='', flush=True)
     start = time.time()
     data = read_file(date_path)
     end = time.time()
-    print('%.2f s' % (end - start))
+    if verbose:
+        print('%.2f s' % (end - start))
 
     if data.empty:
         return
@@ -198,25 +197,28 @@ def group_by_poi(_date, _country):
     }
 
     # Get list of tuples poi_path and poi types
-    if args.filtered:
+    if filtered:
         poi_list = get_trimmed_list_of_files(constants.geo_json_path_filtered)
     else:
         poi_list = get_trimmed_list_of_files(constants.geo_json_path_original)
 
-    print('Sorting POIs... ', end='', flush=True)
+    if verbose:
+        print('Sorting POIs... ', end='', flush=True)
     start = time.time()
 
     for (poi_path, poi_types) in poi_list:
         # Get array of shapely objects with poi localizations
         poi_shapes[poi_types] = read_shapes(poi_path)
-        result_dict['poi_list'][poi_types] = np.zeros(constants.num_intervals, dtype='int64')
+        result_dict['poi_list'][poi_types] = np.zeros(constants.num_intervals, dtype=np.int64)
 
     end = time.time()
-    print('%.2f s' % (end - start))
+    if verbose:
+        print('%.2f s' % (end - start))
 
     split_data = np.array_split(data_time_grouped, constants.num_workers)
 
-    print('Classifying points... ', end='', flush=True)
+    if verbose:
+        print('Classifying points... ', end='', flush=True)
     start = time.time()
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -224,7 +226,8 @@ def group_by_poi(_date, _country):
             update_result_dictionary(result_dict, result)
 
     end = time.time()
-    print('%.2f s' % (end - start))
+    if verbose:
+        print('%.2f s' % (end - start))
 
     for poi_type, poi_counts in result_dict['poi_list'].items():
         result_dict['poi_list'][poi_type] = poi_counts.tolist()
@@ -235,27 +238,24 @@ def group_by_poi(_date, _country):
     with open(os.path.join(save_path, (date + '.json')), 'w') as fp:
         json.dump(result_dict, fp)
 
-    print('Script finished successfully')
+    if verbose:
+        print('Script finished successfully')
+        print()
 
 
-parser = argparse.ArgumentParser(description='POI grouping daily')
+def run_poi_grouping_daily(day, _country, closest,
+                           daily, filtered, verbose,
+                           input_path, output_path):
+    global only_closest_poi, dtypes_preprocessed, column_names_preprocessed
 
-parser.add_argument('date')
-parser.add_argument('country')
-parser.add_argument('-c', '--closest', help='classify only to closest POI', action='store_true')
-parser.add_argument('-o', '--old', help='run for old dataset', action='store_true')
-parser.add_argument('-f', '--filtered', help='run for filtered POI list', action='store_true')
+    if closest:
+        only_closest_poi = True
 
-args = parser.parse_args()
+    if daily:
+        dtypes_preprocessed = constants.dtypes_preprocessed_daily
+        column_names_preprocessed = constants.column_names_preprocessed_daily
+    else:
+        dtypes_preprocessed = constants.dtypes_preprocessed_grouped
+        column_names_preprocessed = constants.column_names_preprocessed_grouped
 
-if args.closest:
-    only_closest_poi = True
-
-if not args.old:
-    constants.dtypes_preprocessed = constants.dtypes_preprocessed_new
-    constants.column_names_preprocessed = constants.column_names_preprocessed_new
-    constants.preprocessed_folder = constants.preprocessed_folder_new
-    constants.results_folder = constants.results_folder_new
-    new_dataset = True
-
-group_by_poi(args.date, args.country)
+    group_by_poi(day, _country, filtered, verbose, input_path, output_path)
