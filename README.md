@@ -20,7 +20,7 @@ Tool for monitoring of human aggregates during quarantine using geolocation data
   * [Running grouping script](#running-grouping-script)
     * [Grouping parameters](#grouping-parameters)
 * [Creating visualizations](#creating-visualizations)
-  * [Visualisations parameters](#visualisations-parameters)
+  * [Visualizations parameters](#visualizations-parameters)
   * [Results description](#results-description)
 * [Authors](#authors)
 
@@ -205,7 +205,7 @@ python3 -m scripts.visualize_all [-i] [-b CHANGE_TO_BASE] [-c] [-h]
 The inputs are taken from `results` folder and visualizations are stored in
  `visualizations` folder.
 
-### Visualisations parameters
+### Visualizations parameters
 
 * `[-i, --corona_info]` When this option is selected, all graphs will have marked dates related to
 major coronavirus related events in Poland. Requires data with dates from March 2020
