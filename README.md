@@ -16,8 +16,11 @@ Tool for monitoring of human aggregates during quarantine using geolocation data
     * [Preprocessing parameters](#preprocessing-parameters)
 * [Grouping](#grouping)
   * [geoJSON](#geojson)
+  * [Cutoff distances](#cutoff-distances)
+  * [Running grouping script](#running-grouping-script)
+    * [Grouping parameters](#grouping-parameters)
 * [Creating visualizations](#creating-visualizations)
-  * [Visualisations parameters](#visualize-params)
+  * [Visualisations parameters](#visualisations-parameters)
   * [Results description](#results-description)
 * [Authors](#authors)
 
@@ -65,13 +68,13 @@ conda deactivate
 In order to initialize default directories used throughout this project 
 run `init.sh` script located in scripts folder. The directories created by this 
 script are:
-* **data** - Input data should be placed here.
-* **preprocessed** - Preprocessing results by default will be stored here.
-* **results** - Grouping results will be stored here.
-* **visualizations** - Generated visualizations will be stored here.
+* **data** - input data should be placed here,
+* **preprocessed** - preprocessing results by default will be stored here,
+* **results** - grouping results will be stored here,
+* **visualizations** - generated visualizations will be stored here.
 
 If you want to use other directories instead of the ones provided, you will 
-need to change appropriate paths in `src/constants/constants.py`.
+need to change appropriate paths in `src/constants/constants.py`
 
 ## Preprocessing
 
@@ -122,23 +125,26 @@ Before running preprocessing script add .tsv files to `data` directory. Data sho
 The script for preprocessing can be run with:
 
 ```
-python3 -m scripts.preprocessing [path] [-d, --daily] [-s SINGLE_DAY, --single-day SINGLE_DAY] [-i, --ignore-single] [-v, --verbose] [-h, --help]
+python3 -m scripts.preprocessing [path] [-d] [-s SINGLE_DAY] [-i] [-v] [-h]
 ```
 
 To preprocess single daily file, run:
 
 ```
-python3 -m scripts.preprocessing -s YYYYMMDD [-i] [path]
+python3 -m scripts.preprocessing [path] -s SINGLE_DAY [-i]
 ```
 
 #### Preprocessing parameters
 
-* `[path]` Path to existing, empty directory, where output files will be generated, (default=`preprocessed`).
-* `[-d, --daily]` Run daily preprocessing, (default=False).
-* `[-s SINGLE_DAY, --single-day SINGLE_DAY]` Run daily preprocessing for single day, SINGLE_DAY should be passed in YYYYMMDD format. 
-* `[-i, --ignore-single]` Ignore non-moving users in daily preprocessing, (default=False, requires `[-d, --daily]`).
-* `[-v, --verbose]` Will display extra runtime info for grouped preprocessing, (default=False, without `[-d, --daily]`).
-* `[-h, --help]` Default help option prints help message.
+* `[path]` Path to existing, empty directory, where output files will be generated, (default=`preprocessed`)
+* `[-d, --daily]` Run daily preprocessing, (default=False)
+* `[-s SINGLE_DAY, --single-day SINGLE_DAY]` Run daily preprocessing for single day, SINGLE_DAY should be passed in YYYYMMDD format
+* `[-i, --ignore-single]` Ignore non-moving users in daily preprocessing, (default=False, requires `[-d, --daily]`)
+* `[-v, --verbose]` Will display extra runtime info for grouped preprocessing, (default=False, without `[-d, --daily]`)
+* `[-h, --help]` Default help option prints help message
+
+After running preprocessing script, there will be a different subdirectory in `path` for every country in dataset (when using *grouped* dataset,
+subdirectory for `default_country` from `src/constants/constants.py` is created).
 
 ## Grouping
 
@@ -152,54 +158,81 @@ To use different set of points, optionally remove existing and add new to `origi
 python3 -m scripts.poi_filter
 ```
 
-Filtering script removes points which do not have `name` key and for schools checks whether the name contains any keyword from `schools` array in `src/contants/constants.py`.
+Filtering script removes points which do not have `name` key and for schools allows only the ones where the name contains any keyword from `schools` array in `src/contants/constants.py`
+
+### Cutoff distances
+
+When deciding whether point should be classified to certain POI type, the script calculates distance to nearest POI of that type and checks if that distance is lower or equal to defined cutoff distance. These distances (expressed in arc degrees) are defined separately for each POI type and are stored in `params/cutoff_distances.json` file. To define your own cutoff distances, simply edit above file.
+
+### Running grouping script
+
+The script for grouping can be run with:
+
+```
+python3 -m scripts.poi_grouping [preprocessed_path] [results_path] [country] [-d] [-c] [-s SINGLE_DAY] [-f] [-v] [-h]
+```
+
+To run grouping on single daily file, run:
+
+```
+python3 -m scripts.poi_grouping [preprocessed_path] [results_path] [country] [-d] [-c] -s SINGLE_DAY [-f] [-v]
+```
+
+#### Grouping parameters
+
+* `[preprocessed_path]` Path to preprocessing results directory, (default=`preprocessed`)
+* `[results_path]` Path to store grouping results, (default=`results`)
+* `[country]` Country to group data from, (default=`default_country`)
+* `[-d, --daily]` Run daily grouping (daily dataset), (default=False)
+* `[-c, --closest]` Classify points only to closest POI, (default=True)
+* `[-s SINGLE_DAY, --single-day SINGLE_DAY]` Run grouping for single day, should be passed in YYYYMMDD format
+* `[-f, --filtered]` Run for filtered POI list, (default=True)
+* `[-h, --help]` Default help option prints help message
+
+After running grouping script, `results_path` will have the same directories structure as `preprocessed_path` with output .json file for every day.
 
 ## Creating visualizations
 
-In order to run visualizations scripts you will need to have directories generated
- with poi-groping in your results folder (one directory per poi-grouping configuration).
+In order to run visualizations script you will need to have directories generated
+with POI grouping in your results folder (one directory for every country).
 
 The script for creating visualizations can be run with:
 
 ```
-python3 -m scripts.visualize_all [-h] [-i] [-b CHANGE_TO_BASE] [-c]
+python3 -m scripts.visualize_all [-i] [-b CHANGE_TO_BASE] [-c] [-h]
 ```
 
 The inputs are taken from `results` folder and visualizations are stored in
  `visualizations` folder.
 
 ### Visualisations parameters
-* `[-h]` Default help option prints help message.
 
-* `[-i]` When this option is selected all graphs will have marked dates related to 
-major coronavirus related events in Poland. Requires data with dates from march 2020.
- 
-*  `[-b CHANGE_TO_BASE]` This parameter is used for setting base date. 
+* `[-i, --corona_info]` When this option is selected, all graphs will have marked dates related to
+major coronavirus related events in Poland. Requires data with dates from March 2020
+*  `[-b CHANGE_TO_BASE, --change_to_base CHANGE_TO_BASE]` This parameter is used for setting base date.
 All data from dates up to base date are averaged out and used for calculation 
-of base value, then all data are shown as change relative to base. 
+of base value, then all data are shown as change relative to base
 `CHANGE_TO_BASE` is taken in `%Y%m%d` format. In order to disable graphs
- with change to base use `-b ""`. Default value is provided, see with `-h`.
-
-* `[-c]` When selected previous visualizations will be cleaned.
+ with change to base use `-b ""`. Default value is provided, see with `-h`
+* `[-c, --clean]` When selected, previous visualizations will be deleted
+* `[-h, --help]` Default help option prints help message
 
 ### Results description
 All results are stored in `visualizations` folder. There is a generated 
-directory with visualizations for every configuration from `results` folder.
+subdirectory with visualizations for every subdirectory from `results` folder.
 
-In each configuration folder there are directories for all POI types 
-(from geojsons). There are 3 visualization types provided for every POI:
+In each subdirectory there are folders for all POI types
+(from geoJSON files). There are 3 visualization types provided for every POI type:
 
-* **Classic** - The counts for a POI type in a given day are left unchanged and 
-displayed.
-
-* **Normalized** - The counts for all POI types in a given day are scaled. They are 
-scaled to 10^6 daily data points (so when for a given day there are 10^6 
-data points, normal will be the same as normalized). 
-
-* **Share of total** - This graph type shows what percentage of data points from 
+* **Classic** - the counts for a POI type in a given day are left unchanged and
+displayed,
+* **Normalized** - the counts for all POI types in a given day are scaled to
+10^6 daily data points (so when for a given day there are 10^6
+data points, normal will be the same as normalized),
+* **Share of total** - this graph type shows what percentage of data points from
 a given day fell into a particular POI type.
 
-Also when `change to base` is set, every visualization type has its "relative to 
+Also when `CHANGE_TO_BASE` is set, every visualization type has its "relative to
 base counterpart", so a total of 6 types are created.
 
 ## Authors
