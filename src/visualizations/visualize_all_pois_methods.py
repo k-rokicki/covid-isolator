@@ -132,9 +132,9 @@ def normalize_daily_counts(info, counts_days, normalize_option):
 
 
 # Centralize counts_days around mean if centralize flag is set
-def centralize_daily_counts(info, counts_days, centralize):
+def centralize_daily_counts(info, counts_days, centralize, base_day):
     if centralize:
-        last_base_idx = get_day_idx(info['first_day'], const.base_final_day)
+        last_base_idx = get_day_idx(info['first_day'], base_day)
         base = np.mean(counts_days[:last_base_idx])
         return (counts_days - base) / base
     else:
@@ -194,6 +194,7 @@ def set_y_ticks(centralize, normalize_option):
 # Make visualization for single POI
 def visualize_single(info,                   # all info from jsons
                      poi_name,               # what POI to visualize
+                     base_date,              # base date for calculations
                      coronavirus_info=True,  # coronavirus restrictions timeline
                      normalize_option=0,     # normalize daily counts option:
                                              # 0 -> no normalization
@@ -203,7 +204,8 @@ def visualize_single(info,                   # all info from jsons
                      save_dir=None):         # path to save dir, if None, plot
     counts_days = np.sum(info['poi_counts'][poi_name], axis=1, dtype=np.int64)
     counts_days = normalize_daily_counts(info, counts_days, normalize_option)
-    counts_days = centralize_daily_counts(info, counts_days, centralize)
+    counts_days = centralize_daily_counts(info, counts_days,
+                                          centralize, base_date)
 
     list_of_days = generate_list_of_days(info['first_day'], info['day_count'])
 
@@ -239,14 +241,14 @@ def visualize_single(info,                   # all info from jsons
 # save_dir_path -> path to directory where files will be saved
 # grouping_results_dir_path -> path to dir with poi-grouping results
 # corona_info -> Bool if add corona legend
-# change_to_base -> String day representing end of base, empty for no base
+# base_date -> String day representing end of base, empty for no base
 # For example:
 # save_dir_path = '/home/zpp/visualizations/poiGrouping'
 # grouping_results_dir_path = '/home/zpp/results/poiGrouping/PL'
 def visualize_all(grouping_results_dir_path,
                   save_dir_path,
                   corona_info,
-                  change_to_base):
+                  base_date):
     visualize_prep(save_dir_path, grouping_results_dir_path)
     info = read_all_jsons(grouping_results_dir_path)
 
@@ -254,9 +256,9 @@ def visualize_all(grouping_results_dir_path,
         save_current_dir = os.path.join(save_dir_path,
                                         poi_name.replace("/", "_"))
         for norm_opt in range(3):
-            visualize_single(info, poi_name, corona_info, norm_opt, False,
-                             save_current_dir)
+            visualize_single(info, poi_name, base_date, corona_info,
+                             norm_opt, False, save_current_dir)
 
-            if change_to_base:
-                visualize_single(info, poi_name, corona_info, norm_opt, True,
-                                 save_current_dir)
+            if base_date:
+                visualize_single(info, poi_name, base_date, corona_info,
+                                 norm_opt, True, save_current_dir)
